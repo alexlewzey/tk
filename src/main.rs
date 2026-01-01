@@ -70,10 +70,7 @@ fn read_user_callables() -> HashMap<Vec<Key>, String> {
 }
 
 fn read_callables() -> HashMap<Vec<Key>, String> {
-    let callables: Vec<(&str, &str)> = vec![
-        (";hm", "hello mole!"),
-        (";ht", "hi ted!"),
-    ];
+    let callables: Vec<(&str, &str)> = vec![(";hm", "hello mole!"), (";ht", "hi ted!")];
     let map: HashMap<Vec<Key>, String> = callables
         .into_iter()
         .map(|(k, v)| (k.chars().map(char_to_key).collect(), v.to_string()))
@@ -128,5 +125,3 @@ fn main() {
 //     }
 
 // }
-
-
