@@ -105,8 +105,6 @@ fn main() {
                         typer.key(enigo::Key::Backspace, Click);
                     }
                     typer.text(result).unwrap();
-                } else {
-                    println!("No match")
                 }
             }
         }
@@ -116,4 +114,3 @@ fn main() {
         println!("{:?}", error);
     }
 }
-
