@@ -6,7 +6,6 @@ Personal took-kit
 todo:
 - writer
     - write > n left arrow key
-    - new lines over multiple lines i.e. \n = enter
     - add useful writers (be strict)
         - sync old repo on both laptops
         - perhaps have global callables and local callables file

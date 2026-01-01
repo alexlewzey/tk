@@ -58,10 +58,10 @@ fn char_to_key(char: char) -> Key {
 }
 
 fn read_user_callables() -> HashMap<Vec<Key>, String> {
-    let file = File::open("callables.json").expect("callables.json does not exist...");
+    let file = File::open("callables.local.json").expect("callables.local.json does not exist...");
     let reader = BufReader::new(file);
     let map: HashMap<String, String> =
-        serde_json::from_reader(reader).expect("callables.json is invalid JSON...");
+        serde_json::from_reader(reader).expect("callables.local.json is invalid JSON...");
     let keys_to_call: HashMap<Vec<Key>, String> = map
         .into_iter()
         .map(|(k, v)| (k.chars().map(char_to_key).collect(), v))
@@ -69,21 +69,21 @@ fn read_user_callables() -> HashMap<Vec<Key>, String> {
     keys_to_call
 }
 
-fn read_app_callables() -> HashMap<Vec<Key>, String> {
-    let callables: Vec<(Vec<Key>, &str)> = vec![
-        (vec![Key::KeyA, Key::KeyB, Key::KeyC], "hello mole!"),
-        (vec![Key::KeyA, Key::KeyB, Key::KeyD], "hi ted!"),
+fn read_callables() -> HashMap<Vec<Key>, String> {
+    let callables: Vec<(&str, &str)> = vec![
+        (";hm", "hello mole!"),
+        (";ht", "hi ted!"),
     ];
     let map: HashMap<Vec<Key>, String> = callables
         .into_iter()
-        .map(|(k, v)| (k, v.to_string()))
+        .map(|(k, v)| (k.chars().map(char_to_key).collect(), v.to_string()))
         .collect();
     map
 }
 
 fn main() {
     let mut history: VecDeque<Key> = VecDeque::new();
-    let mut callables = read_app_callables();
+    let mut callables = read_callables();
     let user_callables = read_user_callables();
     callables.extend(user_callables);
 
@@ -104,7 +104,12 @@ fn main() {
                     for _ in 0..3 {
                         typer.key(enigo::Key::Backspace, Click);
                     }
-                    typer.text(result).unwrap();
+                    let lines = result.split("\n");
+                    for line in lines {
+                        typer.text(line).unwrap();
+                        typer.key(enigo::Key::Return, Click);
+                    }
+                    typer.key(enigo::Key::Backspace, Click);
                 }
             }
         }
@@ -114,3 +119,14 @@ fn main() {
         println!("{:?}", error);
     }
 }
+
+// fn main() {
+//     let x = "hello\nmole".split("\n");
+//     dbg!(&x);
+//     for i in x {
+//         dbg!(i);
+//     }
+
+// }
+
+
