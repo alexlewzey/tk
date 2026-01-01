@@ -57,23 +57,34 @@ fn char_to_key(char: char) -> Key {
     .expect("Invalid key detected")
 }
 
-fn read_user_callables() -> HashMap<Vec<Key>, String> {
+fn read_user_callables() -> HashMap<Vec<Key>, (String, i32)> {
     let file = File::open("callables.local.json").expect("callables.local.json does not exist...");
     let reader = BufReader::new(file);
-    let map: HashMap<String, String> =
+    let map: HashMap<String, (String, i32)> =
         serde_json::from_reader(reader).expect("callables.local.json is invalid JSON...");
-    let keys_to_call: HashMap<Vec<Key>, String> = map
+    let keys_to_call: HashMap<Vec<Key>, (String, i32)> = map
         .into_iter()
         .map(|(k, v)| (k.chars().map(char_to_key).collect(), v))
         .collect();
     keys_to_call
 }
 
-fn read_callables() -> HashMap<Vec<Key>, String> {
-    let callables: Vec<(&str, &str)> = vec![(";hm", "hello mole!"), (";ht", "hi ted!")];
-    let map: HashMap<Vec<Key>, String> = callables
+fn read_callables() -> HashMap<Vec<Key>, (String, i32)> {
+    let callables: Vec<(&str, (String, i32))> = vec![
+        (";hm", ("hello mole!".to_string(), 0)),
+        (";ht", ("hi ted!".to_string(), 0)),
+        (
+            ";qy",
+            (
+                "qualify row_number() over (partition by ) = 1".to_string(),
+                5,
+            ),
+        ),
+        (";ac", ("git add -A && git commit -m \"\"".to_string(), 1)),
+    ];
+    let map: HashMap<Vec<Key>, (String, i32)> = callables
         .into_iter()
-        .map(|(k, v)| (k.chars().map(char_to_key).collect(), v.to_string()))
+        .map(|(k, v)| (k.chars().map(char_to_key).collect(), v))
         .collect();
     map
 }
@@ -101,12 +112,15 @@ fn main() {
                     for _ in 0..3 {
                         typer.key(enigo::Key::Backspace, Click);
                     }
-                    let lines = result.split("\n");
+                    let lines = result.0.split("\n");
                     for line in lines {
                         typer.text(line).unwrap();
                         typer.key(enigo::Key::Return, Click);
                     }
                     typer.key(enigo::Key::Backspace, Click);
+                    for _ in 0..result.1 {
+                        typer.key(enigo::Key::LeftArrow, Click);
+                    }
                 }
             }
         }
@@ -116,12 +130,3 @@ fn main() {
         println!("{:?}", error);
     }
 }
-
-// fn main() {
-//     let x = "hello\nmole".split("\n");
-//     dbg!(&x);
-//     for i in x {
-//         dbg!(i);
-//     }
-
-// }

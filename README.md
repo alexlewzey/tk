@@ -5,7 +5,6 @@ Personal took-kit
 
 todo:
 - writer
-    - write > n left arrow key
     - add useful writers (be strict)
         - sync old repo on both laptops
         - perhaps have global callables and local callables file
