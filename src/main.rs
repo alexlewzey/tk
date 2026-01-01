@@ -1,0 +1,119 @@
+#![allow(unused)]
+use enigo::{self, Direction::Click, Keyboard, Mouse};
+use rdev::{Event, EventType, Key, listen};
+use std::fs::File;
+use std::io::BufReader;
+use std::{
+    collections::{HashMap, VecDeque},
+    hash::Hash,
+    vec,
+};
+
+fn char_to_key(char: char) -> Key {
+    match char {
+        // Punctuation
+        ';' => Some(Key::SemiColon),
+        ' ' => Some(Key::Space),
+        // Alphabetical
+        'a' => Some(Key::KeyA),
+        'b' => Some(Key::KeyB),
+        'c' => Some(Key::KeyC),
+        'd' => Some(Key::KeyD),
+        'e' => Some(Key::KeyE),
+        'f' => Some(Key::KeyF),
+        'g' => Some(Key::KeyG),
+        'h' => Some(Key::KeyH),
+        'i' => Some(Key::KeyI),
+        'j' => Some(Key::KeyJ),
+        'k' => Some(Key::KeyK),
+        'l' => Some(Key::KeyL),
+        'm' => Some(Key::KeyM),
+        'n' => Some(Key::KeyN),
+        'o' => Some(Key::KeyO),
+        'p' => Some(Key::KeyP),
+        'q' => Some(Key::KeyQ),
+        'r' => Some(Key::KeyR),
+        's' => Some(Key::KeyS),
+        't' => Some(Key::KeyT),
+        'u' => Some(Key::KeyU),
+        'v' => Some(Key::KeyV),
+        'w' => Some(Key::KeyW),
+        'x' => Some(Key::KeyX),
+        'y' => Some(Key::KeyY),
+        'z' => Some(Key::KeyZ),
+        // Numbers
+        '0' => Some(Key::Num0),
+        '1' => Some(Key::Num1),
+        '2' => Some(Key::Num2),
+        '3' => Some(Key::Num3),
+        '4' => Some(Key::Num4),
+        '5' => Some(Key::Num5),
+        '6' => Some(Key::Num6),
+        '7' => Some(Key::Num7),
+        '8' => Some(Key::Num8),
+        '9' => Some(Key::Num9),
+        _ => None,
+    }
+    .expect("Invalid key detected")
+}
+
+fn read_user_callables() -> HashMap<Vec<Key>, String> {
+    let file = File::open("callables.json").expect("callables.json does not exist...");
+    let reader = BufReader::new(file);
+    let map: HashMap<String, String> =
+        serde_json::from_reader(reader).expect("callables.json is invalid JSON...");
+    let keys_to_call: HashMap<Vec<Key>, String> = map
+        .into_iter()
+        .map(|(k, v)| (k.chars().map(char_to_key).collect(), v))
+        .collect();
+    keys_to_call
+}
+
+fn read_app_callables() -> HashMap<Vec<Key>, String> {
+    let callables: Vec<(Vec<Key>, &str)> = vec![
+        (vec![Key::KeyA, Key::KeyB, Key::KeyC], "hello mole!"),
+        (vec![Key::KeyA, Key::KeyB, Key::KeyD], "hi ted!"),
+    ];
+    let map: HashMap<Vec<Key>, String> = callables
+        .into_iter()
+        .map(|(k, v)| (k, v.to_string()))
+        .collect();
+    map
+}
+
+fn main() {
+    let mut history: VecDeque<Key> = VecDeque::new();
+    let mut callables = read_app_callables();
+    let user_callables = read_user_callables();
+    callables.extend(user_callables);
+
+    let mut typer = enigo::Enigo::new(&enigo::Settings::default()).unwrap();
+
+    let callback = move |event: Event| {
+        if let EventType::KeyPress(key) = event.event_type {
+            history.push_back(key);
+            if history.len() > 3 {
+                history.pop_front();
+            };
+            println!("{:?}", history);
+
+            if history.len() == 3 {
+                let lookup: Vec<Key> = history.iter().cloned().collect();
+                if let Some(result) = callables.get(&lookup) {
+                    println!("{result:?}");
+                    for _ in 0..3 {
+                        typer.key(enigo::Key::Backspace, Click);
+                    }
+                    typer.text(result).unwrap();
+                } else {
+                    println!("No match")
+                }
+            }
+        }
+    };
+
+    if let Err(error) = listen(callback) {
+        println!("{:?}", error);
+    }
+}
+
