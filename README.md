@@ -8,12 +8,7 @@ todo:
     - add useful writers (be strict)
         - sync old repo on both laptops
         - perhaps have global callables and local callables file
-- formatters
-    - copy clipboard and process
-    - select line at carrot
-    add useful formatters
 - tools
-    - type date
     - tidy text with LLM call
 - alias
     - add alias
@@ -23,3 +18,7 @@ todo:
 - add tests
 - add useful pre-commits
     - check what is the common rust stack
+- refactor for readability
+    - more DRY
+    - variables names
+    - use of namespaces
