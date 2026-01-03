@@ -2,10 +2,18 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
-      - id: check-added-large-files
       - id: check-merge-conflict
       - id: trailing-whitespace
       - id: end-of-file-fixer
+      - id: pretty-format-json
+        exclude: (\.ipynb|devcontainer.json)$
+        args:
+        - --autofix
+        - --no-sort-keys
+      - id: check-docstring-first
+      - id: detect-private-key
+      - id: check-added-large-files
+        args: [--maxkb=20480]
 
   - repo: local
     hooks:
