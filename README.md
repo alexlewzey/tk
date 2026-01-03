@@ -7,7 +7,8 @@ todo:
 - writer
     - add useful writers (be strict)
         - sync old repo on both laptops
-        - perhaps have global callables and local callables file
+        - add the best ones
+        - perhaps put all callables in json files
 - tools
     - tidy text with LLM call
 - alias
