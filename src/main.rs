@@ -90,6 +90,7 @@ fn read_key_to_func() -> HashMap<Vec<Key>, fn()> {
     key_to_func.insert(";sl", formatters::select_line);
     key_to_func.insert(";dd", formatters::sql_count_distinct);
     key_to_func.insert(";dt", formatters::sql_count_distinct_millions);
+    key_to_func.insert(";ci", formatters::sql_count_nulls);
     key_to_func
         .into_iter()
         .map(|(k, v)| (k.chars().map(char_to_key).collect(), v))
