@@ -1,4 +1,5 @@
 #!/bin/bash
+# add to .zshrc > source ~/repository/aliases.sh
 # unix
 alias sizes="find . -type f -exec du -h {} + | sort -r -h | head"
 alias ls="ls -alh"
