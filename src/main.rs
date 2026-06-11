@@ -4,7 +4,7 @@ use chrono::Local;
 use enigo::{self, Direction::Click, Keyboard, Mouse};
 use heck::ToSnakeCase;
 use rdev::{Event, EventType, Key, listen};
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::{
@@ -63,13 +63,11 @@ fn char_to_key(char: char) -> Key {
     .expect("Invalid key detected")
 }
 
-fn read_callables(fname: &str) -> HashMap<Vec<Key>, (String, i32)> {
-    let project_root = env!("CARGO_MANIFEST_DIR");
-    let path = PathBuf::from(project_root).join(fname);
-    let file = File::open(path).expect("{fname} does not exist...");
+fn read_callables(path: PathBuf) -> HashMap<Vec<Key>, (String, i32)> {
+    let file = File::open(path).expect("`path` does not exist...");
     let reader = BufReader::new(file);
     let map: HashMap<String, (String, i32)> =
-        serde_json::from_reader(reader).expect("{fname} is invalid JSON...");
+        serde_json::from_reader(reader).expect("`path` is invalid JSON...");
     let keys_to_call: HashMap<Vec<Key>, (String, i32)> = map
         .into_iter()
         .map(|(k, v)| (k.chars().map(char_to_key).collect(), v))
@@ -98,9 +96,16 @@ fn read_key_to_func() -> HashMap<Vec<Key>, fn()> {
 }
 
 fn main() {
+    let root_dir = env!("CARGO_MANIFEST_DIR");
+    let mut callables_path = PathBuf::from(root_dir).join("callables.json");
+    let mut callables_local_path = PathBuf::from(root_dir).join("callables.local.json");
+    if !callables_local_path.exists() {
+        fs::write(&callables_local_path, "{}");
+    }
+
     let mut history: VecDeque<Key> = VecDeque::new();
-    let mut callables = read_callables("callables.json");
-    let user_callables = read_callables("callables.local.json");
+    let mut callables = read_callables(callables_path);
+    let user_callables = read_callables(callables_local_path);
     callables.extend(user_callables);
     let mut typer = enigo::Enigo::new(&enigo::Settings::default()).unwrap();
 

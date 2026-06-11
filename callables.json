@@ -210,5 +210,9 @@
   ";gi": [
     "http://gemini.google.com/app",
     0
+  ],
+  ";rp": [
+    "println!(\"{:?}\", )",
+    1
   ]
 }
