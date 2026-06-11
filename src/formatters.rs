@@ -7,13 +7,13 @@ use rdev::{Event, EventType, Key, listen};
 use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
+use std::thread;
+use std::time::Duration;
 use std::{
     collections::{HashMap, VecDeque},
     hash::Hash,
     vec,
 };
-use std::thread;
-use std::time::Duration;
 
 pub fn current_date() -> () {
     let mut typer = enigo::Enigo::new(&enigo::Settings::default()).unwrap();
@@ -47,7 +47,8 @@ pub fn remove_blanklines() -> () {
     let mut clipboard = Clipboard::new().unwrap();
     let result = clipboard.get_text().unwrap();
     typer.text(
-        &result.trim()
+        &result
+            .trim()
             .lines()
             .filter(|line| !line.is_empty())
             .collect::<Vec<&str>>()
@@ -68,7 +69,7 @@ pub fn dash_center() -> () {
     let mut typer = enigo::Enigo::new(&enigo::Settings::default()).unwrap();
     let mut clipboard = Clipboard::new().unwrap();
     let result = clipboard.get_text().unwrap();
-    let cleaned = result.trim();
+    let cleaned = format!(" {} ", result.trim());
     typer.text(&format!("{cleaned:-^88}"));
 }
 
@@ -76,11 +77,9 @@ pub fn hash_center() -> () {
     let mut typer = enigo::Enigo::new(&enigo::Settings::default()).unwrap();
     let mut clipboard = Clipboard::new().unwrap();
     let result = clipboard.get_text().unwrap();
-    let cleaned = result.trim();
+    let cleaned = format!(" {} ", result.trim());
     typer.text(&format!("{cleaned:#^88}"));
 }
-
-
 
 pub fn copy_selection() -> String {
     let mut typer = enigo::Enigo::new(&enigo::Settings::default()).unwrap();
@@ -90,13 +89,13 @@ pub fn copy_selection() -> String {
     typer.key(enigo::Key::Meta, enigo::Direction::Press);
     typer.key(enigo::Key::Unicode('c'), enigo::Direction::Click);
     typer.key(enigo::Key::Meta, enigo::Direction::Release);
-    
+
     for i in 0..5 {
-        println!("Sleeping {} - {:.0} millis", i+1, i+1 * 10);
+        println!("Sleeping {} - {:.0} millis", i + 1, i + 1 * 10);
         thread::sleep(Duration::from_millis(10));
         let new = clipboard.get_text().unwrap().trim().to_string();
         if original != new {
-            return new
+            return new;
         }
     }
     clipboard.get_text().unwrap().trim().to_string()
@@ -139,5 +138,7 @@ pub fn sql_count_nulls() {
     let mut typer = enigo::Enigo::new(&enigo::Settings::default()).unwrap();
     select_word();
     let column = copy_selection();
-    typer.text(&format!("countif({column} is null) / count(*) pct_null_{column},"));
+    typer.text(&format!(
+        "countif({column} is null) / count(*) pct_null_{column},"
+    ));
 }

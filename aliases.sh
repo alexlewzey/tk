@@ -2,8 +2,10 @@
 # unix
 alias sizes="find . -type f -exec du -h {} + | sort -r -h | head"
 alias ls="ls -alh"
-alias c="cursor"
+alias c="code"
 alias pcr="pre-commit run --all-files"
+alias cb="git branch --show-current | tr -d '\n' | pbcopy"
+
 # git
 alias add="git add -A"
 alias push="git push"
