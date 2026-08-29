@@ -16,7 +16,11 @@
     0
   ],
   ";mt": [
-    "\n\nMany thanks\n\nAlex",
+    "make test",
+    0
+  ],
+  ";mi": [
+    "make install",
     0
   ],
   ";cc": [
@@ -214,5 +218,17 @@
   ";rp": [
     "println!(\"{:?}\", )",
     1
+  ],
+  ";ud": [
+    "git add -A && git commit -m \"update\"",
+    0
+  ],
+  ";cm": [
+    "git checkout main",
+    0
+  ],
+  ";cs": [
+    "git checkout staging",
+    0
   ]
 }
