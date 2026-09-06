@@ -230,5 +230,13 @@
   ";cs": [
     "git checkout staging",
     0
+  ],
+  ";fp": [
+    "fmt.Println()",
+    1
+  ],
+  ";ff": [
+    "fmt.Printf()",
+    1
   ]
 }
